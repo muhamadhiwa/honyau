@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lost Star & Little Bear ⭐</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     SECRET MESSAGE — EDIT THIS VARIABLE TO CUSTOMIZE THE MESSAGE
+     ============================================================ -->
+<script src="script.js"></script>
+
+<!-- ============================================================
+     MAIN SCENE
+     ============================================================ -->
+<div id="scene">
+  <!-- Custom cursor -->
+  <div id="cursor"></div>
+
+  <!-- Title -->
+  <div id="titleText">✦ The Lost Star &amp; Little Bear ✦</div>
+
+  <!-- Background star canvas -->
+  <canvas id="skyCanvas"></canvas>
+
+  <!-- Constellation canvas (shown after reunion) -->
+  <canvas id="constellationCanvas"></canvas>
+
+  <!-- Moon -->
+  <div id="moon"></div>
+
+  <!-- Zoom wrapper for camera effect -->
+  <div id="zoomWrapper">
+
+    <!-- ☁️ Bear cloud platform — bear sits on a fluffy drifting cloud -->
+    <div id="bearCloudWrap">
+
+      <!-- Bear container (sits above cloud) -->
+      <div id="bearContainer">
+        <!-- Speech bubble (above bear) -->
+        <div id="speechBubble"></div>
+
+        <!-- Bear SVG drawn inline -->
+        <svg id="bear" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+          <!-- Ears -->
+          <circle cx="28" cy="34" r="16" fill="#c8956c"/>
+          <circle cx="92" cy="34" r="16" fill="#c8956c"/>
+          <circle cx="28" cy="34" r="9" fill="#e8b896"/>
+          <circle cx="92" cy="34" r="9" fill="#e8b896"/>
+
+          <!-- Body -->
+          <ellipse cx="60" cy="108" rx="32" ry="30" fill="#c8956c"/>
+
+          <!-- Head group (for look-up animation) -->
+          <g id="bearHead">
+            <!-- Head -->
+            <circle cx="60" cy="60" r="36" fill="#c8956c"/>
+            <!-- Face shading -->
+            <ellipse cx="60" cy="68" rx="22" ry="18" fill="#e8b896"/>
+            <!-- Snout -->
+            <ellipse cx="60" cy="73" rx="13" ry="9" fill="#e8c8a8"/>
+            <!-- Nose -->
+            <ellipse cx="60" cy="68" rx="6" ry="4" fill="#8b5c3c"/>
+            <!-- Mouth -->
+            <path d="M54 74 Q60 80 66 74" stroke="#8b5c3c" stroke-width="1.8" fill="none" stroke-linecap="round" id="bearMouth"/>
+            <!-- Eyes -->
+            <g id="leftEyeGroup">
+              <ellipse cx="43" cy="54" rx="7" ry="7.5" fill="white"/>
+              <circle id="leftPupil" cx="43" cy="54" r="4.5" fill="#3d2010"/>
+              <circle cx="45" cy="52" r="1.5" fill="white"/>
+            </g>
+            <g id="rightEyeGroup">
+              <ellipse cx="77" cy="54" rx="7" ry="7.5" fill="white"/>
+              <circle id="rightPupil" cx="77" cy="54" r="4.5" fill="#3d2010"/>
+              <circle cx="79" cy="52" r="1.5" fill="white"/>
+            </g>
+            <!-- Eyelids for blinking -->
+            <ellipse id="leftLid" cx="43" cy="50" rx="7.5" ry="0" fill="#c8956c"/>
+            <ellipse id="rightLid" cx="77" cy="50" rx="7.5" ry="0" fill="#c8956c"/>
+            <!-- Blush marks -->
+            <ellipse id="blushLeft" class="blush" cx="32" cy="66" rx="10" ry="6"/>
+            <ellipse id="blushRight" class="blush" cx="88" cy="66" rx="10" ry="6"/>
+          </g>
+
+          <!-- Arms -->
+          <ellipse id="leftArm" cx="22" cy="100" rx="10" ry="16" fill="#c8956c" transform="rotate(-20, 22, 100)"/>
+          <ellipse id="rightArm" cx="98" cy="100" rx="10" ry="16" fill="#c8956c" transform="rotate(20, 98, 100)"/>
+
+          <!-- Swinging legs/feet group -->
+          <g id="bearFeetSwing">
+            <ellipse cx="46" cy="133" rx="13" ry="8" fill="#a0714f"/>
+            <ellipse cx="74" cy="133" rx="13" ry="8" fill="#a0714f"/>
+          </g>
+
+          <!-- Tummy spot -->
+          <ellipse cx="60" cy="108" rx="16" ry="14" fill="#e8b896" opacity="0.6"/>
+
+          <!-- Star held by bear (hidden initially) -->
+          <g id="bearHeldStar" opacity="0" transform="translate(60, 90)">
+            <polygon points="0,-18 4,-7 16,-7 7,1 11,12 0,5 -11,12 -7,1 -16,-7 -4,-7"
+              fill="#ffe066" stroke="#ffcc00" stroke-width="1"/>
+            <circle cx="0" cy="0" r="8" fill="rgba(255,230,100,0.3)"/>
+          </g>
+
+          <!-- Wave arm (hidden, shown at end) -->
+          <g id="waveArm" opacity="0">
+            <ellipse cx="98" cy="88" rx="10" ry="16" fill="#c8956c" transform="rotate(-30, 98, 88)"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Soft glow halo under cloud -->
+      <div id="cloudGlow"></div>
+
+      <!-- Fluffy cloud SVG the bear sits on -->
+      <svg id="bearCloud" viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <defs>
+          <radialGradient id="cloudGrad" cx="50%" cy="40%" r="55%">
+            <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.98"/>
+            <stop offset="60%"  stop-color="#e8e0ff" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#c8b8f0" stop-opacity="0.85"/>
+          </radialGradient>
+          <filter id="cloudBlur">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.5"/>
+          </filter>
+        </defs>
+        <!-- Soft blur shadow layer -->
+        <g filter="url(#cloudBlur)" opacity="0.3">
+          <ellipse cx="160" cy="90" rx="140" ry="30" fill="#b090e0"/>
+        </g>
+        <!-- Main cloud puffs -->
+        <ellipse cx="160" cy="72" rx="130" ry="38" fill="url(#cloudGrad)"/>
+        <ellipse cx="90"  cy="62" rx="72"  ry="48" fill="url(#cloudGrad)"/>
+        <ellipse cx="160" cy="55" rx="68"  ry="52" fill="url(#cloudGrad)"/>
+        <ellipse cx="230" cy="60" rx="76"  ry="46" fill="url(#cloudGrad)"/>
+        <ellipse cx="58"  cy="74" rx="50"  ry="32" fill="url(#cloudGrad)"/>
+        <ellipse cx="265" cy="72" rx="52"  ry="30" fill="url(#cloudGrad)"/>
+        <!-- Inner highlight for softness -->
+        <ellipse cx="148" cy="52" rx="55" ry="30" fill="rgba(255,255,255,0.55)"/>
+        <ellipse cx="88"  cy="58" rx="36" ry="24" fill="rgba(255,255,255,0.40)"/>
+        <ellipse cx="225" cy="57" rx="38" ry="22" fill="rgba(255,255,255,0.40)"/>
+      </svg>
+
+    </div><!-- /bearCloudWrap -->
+
+  </div><!-- /zoomWrapper -->
+
+  <!-- The Magic Star -->
+  <div id="magicStar">
+    <svg class="star-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+      <!-- Glow -->
+      <circle cx="30" cy="30" r="28" fill="rgba(255,230,80,0.15)"/>
+      <circle cx="30" cy="30" r="20" fill="rgba(255,230,80,0.2)"/>
+      <!-- Star shape -->
+      <polygon id="starPolygon"
+        points="30,5 35,22 52,22 39,33 44,50 30,40 16,50 21,33 8,22 25,22"
+        fill="#ffe066" stroke="#ffcc00" stroke-width="1.5"/>
+      <!-- Inner glow -->
+      <circle cx="30" cy="30" r="10" fill="rgba(255,255,180,0.6)"/>
+    </svg>
+  </div>
+
+  <!-- Dim overlay — fades in to hide all scene elements when message appears -->
+  <div id="sceneOverlay"></div>
+
+  <!-- Message card (rises from bottom) -->
+  <div id="messageCard">
+    <div id="messageCardTitle">A Little Message For You</div>
+    <div id="messageText"></div>
+    <div id="messageCardClose">⭐</div>
+  </div>
+
+</div><!-- /scene -->
+
+<script src="script.js"></script>
+</body>
+</html>
