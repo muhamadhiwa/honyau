@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lost Star & Little Bear ⭐</title>
+<style>
+/* ============================================================
+   GLOBAL RESET & VARIABLES
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --sky-top: #0a0520;
+  --sky-mid: #1a0a3a;
+  --sky-bot: #2d1b5e;
+  --moon-glow: #fff8e1;
+  --star-color: #ffe066;
+  --bear-brown: #c8956c;
+  --bear-dark: #a0714f;
+  --bear-light: #e8b896;
+  --grass-top: #2d6a1e;
+  --grass-mid: #1e4d12;
+  --heart-color: #ff6b9d;
+  --magic-purple: #c084fc;
+  --magic-blue: #60a5fa;
+  --magic-pink: #f9a8d4;
+}
+
+body {
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  cursor: none;
+  font-family: 'Georgia', serif;
+  user-select: none;
+}
+
+/* ============================================================
+   CUSTOM CURSOR
+   ============================================================ */
+#cursor {
+  position: fixed;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,220,100,0.9) 0%, rgba(255,180,50,0.4) 60%, transparent 100%);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease;
+  mix-blend-mode: screen;
+  box-shadow: 0 0 10px 4px rgba(255,220,100,0.5);
+}
+
+/* ============================================================
+   MAIN CANVAS / SCENE
+   ============================================================ */
+#scene {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  /* No CSS background — the sky canvas draws the full background */
+  background: #0a0520;
+  overflow: hidden;
+  transition: filter 1.5s ease;
+}
+
+#scene.brightened {
+  filter: brightness(1.25) saturate(1.3);
+}
+
+/* ============================================================
+   ZOOM WRAPPER
+   ============================================================ */
+#zoomWrapper {
+  position: absolute;
+  inset: 0;
+  transform-origin: center center;
+  transition: transform 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ============================================================
+   SKY LAYERS
+   ============================================================ */
+#skyCanvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: block;
+}
+
+/* ============================================================
+   MOON
+   ============================================================ */
+#moon {
+  position: absolute;
+  top: 6%;
+  right: 15%;
+  width: clamp(60px, 8vw, 110px);
+  height: clamp(60px, 8vw, 110px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #fffbe6, #ffe88a 50%, #ffd040 100%);
+  box-shadow:
+    0 0 30px 15px rgba(255,230,100,0.35),
+    0 0 80px 40px rgba(255,210,80,0.2),
+    0 0 140px 70px rgba(255,190,60,0.1);
+  animation: moonPulse 4s ease-in-out infinite;
+  transition: box-shadow 2s ease, width 2s ease, height 2s ease;
+}
+
+#moon.bright {
+  box-shadow:
+    0 0 50px 25px rgba(255,230,100,0.6),
+    0 0 120px 60px rgba(255,210,80,0.4),
+    0 0 200px 100px rgba(255,190,60,0.25);
+}
+
+@keyframes moonPulse {
+  0%, 100% { box-shadow: 0 0 30px 15px rgba(255,230,100,0.35), 0 0 80px 40px rgba(255,210,80,0.2); }
+  50% { box-shadow: 0 0 40px 20px rgba(255,230,100,0.5), 0 0 100px 50px rgba(255,210,80,0.3); }
+}
+
+/* Moon craters */
+#moon::before {
+  content: '';
+  position: absolute;
+  width: 22%; height: 22%;
+  border-radius: 50%;
+  background: rgba(255,200,60,0.35);
+  top: 20%; left: 58%;
+}
+#moon::after {
+  content: '';
+  position: absolute;
+  width: 14%; height: 14%;
+  border-radius: 50%;
+  background: rgba(255,200,60,0.3);
+  top: 55%; left: 25%;
+}
+
+/* ============================================================
+   CLOUDS
+   ============================================================ */
+.cloud {
+  position: absolute;
+  opacity: 0.18;
+  animation: cloudDrift linear infinite;
+  filter: blur(1px);
+}
+
+.cloud-body {
+  position: relative;
+  background: rgba(200,180,255,0.6);
+  border-radius: 50px;
+}
+
+@keyframes cloudDrift {
+  from { transform: translateX(-300px); }
+  to { transform: translateX(calc(100vw + 300px)); }
+}
+
+/* ============================================================
+   BEAR CLOUD PLATFORM
+   ============================================================ */
+#bearCloudWrap {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: cloudPlatformDrift 9s ease-in-out infinite;
+  z-index: 10;
+}
+
+@keyframes cloudPlatformDrift {
+  0%   { transform: translateX(calc(-50% - 28px)) translateY(0px); }
+  25%  { transform: translateX(calc(-50% + 10px)) translateY(-10px); }
+  50%  { transform: translateX(calc(-50% + 28px)) translateY(-4px); }
+  75%  { transform: translateX(calc(-50% + 6px))  translateY(-14px); }
+  100% { transform: translateX(calc(-50% - 28px)) translateY(0px); }
+}
+
+/* The fluffy cloud SVG sits below the bear */
+#bearCloud {
+  position: relative;
+  width: clamp(180px, 26vw, 320px);
+  margin-top: -18px; /* tuck bear feet into cloud */
+  filter:
+    drop-shadow(0 8px 24px rgba(160,120,255,0.30))
+    drop-shadow(0 2px 8px rgba(200,180,255,0.25));
+}
+
+/* Mini sparkle stars orbiting the cloud */
+.cloudStar {
+  position: absolute;
+  pointer-events: none;
+  z-index: 11;
+  animation: cloudStarTwinkle ease-in-out infinite alternate;
+}
+@keyframes cloudStarTwinkle {
+  0%   { opacity: 0.2; transform: scale(0.7) rotate(0deg); }
+  100% { opacity: 1;   transform: scale(1.2) rotate(20deg); }
+}
+
+/* Soft glow halo under the cloud */
+#cloudGlow {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(160px, 22vw, 280px);
+  height: clamp(20px, 3vw, 40px);
+  background: radial-gradient(ellipse, rgba(180,140,255,0.28) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: cloudGlowPulse 4s ease-in-out infinite;
+}
+@keyframes cloudGlowPulse {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scaleX(1); }
+  50%       { opacity: 1;   transform: translateX(-50%) scaleX(1.08); }
+}
+
+/* Swinging feet — animated independently via JS */
+#bearFeetSwing {
+  animation: feetSwing 2.2s ease-in-out infinite;
+  transform-origin: 60px 128px;
+}
+@keyframes feetSwing {
+  0%   { transform: rotate(-8deg) translateX(-3px); }
+  50%  { transform: rotate(8deg)  translateX(3px); }
+  100% { transform: rotate(-8deg) translateX(-3px); }
+}
+
+/* Occasional upward glance animation */
+#bearHead {
+  transform-origin: 60px 60px;
+  animation: bearLookUp 8s ease-in-out infinite;
+}
+@keyframes bearLookUp {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  70%            { transform: rotate(-8deg) translateY(-3px); }
+  80%            { transform: rotate(0deg); }
+}
+
+/* ============================================================
+   BEAR
+   ============================================================ */
+#bearContainer {
+  position: relative;
+  width: clamp(90px, 12vw, 160px);
+  transform-origin: bottom center;
+  z-index: 12;
+  transition: transform 0.3s ease;
+}
+
+#bear {
+  position: relative;
+  width: 100%;
+  transform-origin: bottom center;
+  animation: bearBreathe 3s ease-in-out infinite, bearSit 0.5s ease-out;
+  transition: transform 0.5s ease;
+}
+
+@keyframes bearBreathe {
+  0%, 100% { transform: scaleY(1) scaleX(1); }
+  50% { transform: scaleY(1.02) scaleX(0.99); }
+}
+
+@keyframes bearSit { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* Bear state classes */
+#bear.standUp { animation: bearStand 0.6s ease forwards; }
+@keyframes bearStand {
+  0% { transform: translateY(0) scaleY(1); }
+  40% { transform: translateY(-8%) scaleY(1.08); }
+  100% { transform: translateY(0) scaleY(1.05); }
+}
+
+#bear.jumping { animation: bearJump 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+@keyframes bearJump {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-25%) rotate(-5deg); }
+  60% { transform: translateY(-35%) rotate(5deg); }
+}
+
+#bear.hugging { animation: bearHug 0.5s ease forwards; }
+@keyframes bearHug {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1.05); }
+}
+
+#bear.spinning { animation: bearSpin 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+@keyframes bearSpin {
+  0% { transform: rotate(0deg) scale(1.05); }
+  25% { transform: rotate(-15deg) scale(1.1); }
+  75% { transform: rotate(15deg) scale(1.1); }
+  100% { transform: rotate(0deg) scale(1.05); }
+}
+
+#bear.waving { animation: bearWave 2s ease-in-out infinite; }
+@keyframes bearWave {
+  0%, 100% { transform: rotate(0deg) scale(1.05); }
+  25% { transform: rotate(-5deg) scale(1.05); }
+  75% { transform: rotate(5deg) scale(1.05); }
+}
+
+/* ============================================================
+   SPEECH BUBBLE
+   ============================================================ */
+#speechBubble {
+  position: absolute;
+  background: rgba(255,255,255,0.96);
+  border-radius: 18px;
+  padding: 10px 16px;
+  max-width: clamp(160px, 22vw, 240px);
+  font-size: clamp(11px, 1.4vw, 15px);
+  font-family: 'Georgia', serif;
+  color: #4a3060;
+  line-height: 1.6;
+  box-shadow: 0 4px 24px rgba(100,60,200,0.18), 0 1px 4px rgba(0,0,0,0.1);
+  opacity: 0;
+  transform: scale(0.8) translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events: none;
+  z-index: 20;
+  white-space: pre-line;
+  text-align: center;
+}
+
+#speechBubble.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Bubble tail */
+#speechBubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid rgba(255,255,255,0.96);
+}
+
+/* ============================================================
+   THE MAGIC STAR
+   ============================================================ */
+#magicStar {
+  position: absolute;
+  width: clamp(30px, 4vw, 55px);
+  height: clamp(30px, 4vw, 55px);
+  cursor: pointer !important;
+  z-index: 15;
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34,1.56,0.64,1), filter 0.3s ease;
+  animation: starFloat 5s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(255,220,80,0.8)) drop-shadow(0 0 20px rgba(255,200,50,0.5));
+}
+
+#magicStar.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+#magicStar:hover {
+  filter: drop-shadow(0 0 16px rgba(255,220,80,1)) drop-shadow(0 0 40px rgba(255,200,50,0.8));
+  transform: scale(1.2);
+}
+
+#magicStar.clicked {
+  animation: starWiggle 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  filter: drop-shadow(0 0 30px rgba(255,220,80,1)) drop-shadow(0 0 70px rgba(255,200,50,0.9));
+}
+
+@keyframes starFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  33% { transform: translateY(-18px) rotate(8deg) scale(1.05); }
+  66% { transform: translateY(-8px) rotate(-5deg) scale(0.97); }
+}
+
+@keyframes starWiggle {
+  0% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.4) rotate(-15deg); }
+  50% { transform: scale(1.3) rotate(15deg); }
+  75% { transform: scale(1.45) rotate(-8deg); }
+  100% { transform: scale(1.35) rotate(0deg); }
+}
+
+/* Star SVG polygon */
+.star-svg { width: 100%; height: 100%; overflow: visible; }
+
+/* ============================================================
+   GLITTER TRAIL
+   ============================================================ */
+.glitter {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 14;
+  animation: glitterFall linear forwards;
+}
+@keyframes glitterFall {
+  0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(40px) scale(0) rotate(360deg); }
+}
+
+/* ============================================================
+   HEARTS
+   ============================================================ */
+.heart {
+  position: absolute;
+  font-size: clamp(14px, 2vw, 24px);
+  pointer-events: none;
+  z-index: 30;
+  animation: heartFloat linear forwards;
+}
+@keyframes heartFloat {
+  0% { opacity: 1; transform: translateY(0) scale(0.5) rotate(-10deg); }
+  30% { opacity: 1; transform: translateY(-40px) scale(1.1) rotate(10deg); }
+  100% { opacity: 0; transform: translateY(-130px) scale(0.6) rotate(-5deg); }
+}
+
+/* ============================================================
+   SPARKLE PARTICLES
+   ============================================================ */
+.sparkle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 25;
+  border-radius: 50%;
+  animation: sparkleBurst ease-out forwards;
+}
+@keyframes sparkleBurst {
+  0% { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+}
+
+/* ============================================================
+   CONSTELLATION LINES
+   ============================================================ */
+#constellationCanvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+#constellationCanvas.visible { opacity: 1; }
+
+/* ============================================================
+   FIREFLIES
+   ============================================================ */
+.firefly {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #d4ff80 0%, #a8ff40 40%, transparent 70%);
+  pointer-events: none;
+  z-index: 8;
+  animation: fireflyMove ease-in-out infinite alternate;
+}
+@keyframes fireflyGlow {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.9; }
+}
+
+/* ============================================================
+   DIM OVERLAY — shown behind message card, hides all scene elements
+   ============================================================ */
+#sceneOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 4, 22, 0.82);
+  z-index: 48;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.6s ease;
+}
+#sceneOverlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================================
+   MESSAGE CARD — clean, light, fully readable
+   ============================================================ */
+#messageCard {
+  position: absolute;
+  /* Starts off-screen below */
+  bottom: -400px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(300px, 54vw, 540px);
+  /* Solid warm-white background for perfect readability */
+  background: #fffdf6;
+  border: none;
+  border-radius: 28px;
+  padding: clamp(28px, 4vw, 48px) clamp(28px, 5vw, 52px);
+  box-shadow:
+    0 0 0 1px rgba(200,180,140,0.3),
+    0 4px 0 rgba(200,180,140,0.2),
+    0 20px 60px rgba(0,0,0,0.45),
+    0 4px 16px rgba(0,0,0,0.25);
+  z-index: 60;
+  transition: bottom 1.6s cubic-bezier(0.34, 1.15, 0.64, 1), opacity 1.6s ease;
+  text-align: center;
+  opacity: 0;
+}
+
+#messageCard.revealed {
+  bottom: 50%;
+  transform: translateX(-50%) translateY(50%);
+  opacity: 1;
+}
+
+/* Decorative top ribbon */
+#messageCard::before {
+  content: '✦  ✦  ✦';
+  display: block;
+  font-size: clamp(10px, 1.2vw, 13px);
+  letter-spacing: 0.5em;
+  color: #c8a96e;
+  margin-bottom: 14px;
+}
+
+/* Decorative bottom ribbon */
+#messageCard::after {
+  content: '✦  ✦  ✦';
+  display: block;
+  font-size: clamp(10px, 1.2vw, 13px);
+  letter-spacing: 0.5em;
+  color: #c8a96e;
+  margin-top: 14px;
+}
+
+#messageCardTitle {
+  font-size: clamp(10px, 1.3vw, 14px);
+  color: #8b6a3a;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+}
+
+#messageCardTitle::before, #messageCardTitle::after { content: ''; }
+
+#messageText {
+  font-family: 'Georgia', serif;
+  font-size: clamp(14px, 1.7vw, 18px);
+  color: #2a1a3e;
+  line-height: 2.0;
+  white-space: pre-line;
+  min-height: 60px;
+  text-shadow: none;
+  letter-spacing: 0.01em;
+}
+
+#messageCardClose {
+  margin-top: 20px;
+  display: inline-block;
+  font-size: clamp(20px, 2.5vw, 28px);
+  cursor: pointer;
+  animation: starTwinkle 2s ease-in-out infinite;
+  opacity: 0.75;
+}
+@keyframes starTwinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+  50% { transform: scale(1.25) rotate(18deg); opacity: 1; }
+}
+
+/* ============================================================
+   MAGICAL LIGHTS BACKGROUND
+   ============================================================ */
+.magicLight {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: screen;
+  animation: magicLightDrift ease-in-out infinite alternate;
+}
+@keyframes magicLightDrift {
+  from { transform: translate(0, 0) scale(1); opacity: 0.06; }
+  to { transform: translate(var(--dx), var(--dy)) scale(1.3); opacity: 0.18; }
+}
+
+/* ============================================================
+   BLUSH MARKS
+   ============================================================ */
+.blush {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,120,120,0.35);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.blush.visible { opacity: 1; }
+
+/* ============================================================
+   TITLE
+   ============================================================ */
+#titleText {
+  position: absolute;
+  top: clamp(10px, 2vw, 20px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,230,180,0.7);
+  font-family: 'Georgia', serif;
+  font-size: clamp(12px, 1.4vw, 16px);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 5;
+  text-shadow: 0 0 20px rgba(255,200,100,0.5);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   LOADING FADE IN
+   ============================================================ */
+#scene { animation: sceneFadeIn 2s ease forwards; }
+@keyframes sceneFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SECRET MESSAGE — EDIT THIS VARIABLE TO CUSTOMIZE THE MESSAGE
+     ============================================================ -->
+<script>
+const secretMessage = `You are someone truly special,
+and the world is brighter with you in it.
+
+Every little wish you hold in your heart —
+I hope each one finds its way to you. 🌟
+
+With all the love in the universe,
+Thank you for being you. 💫`;
+</script>
+
+<!-- ============================================================
+     MAIN SCENE
+     ============================================================ -->
+<div id="scene">
+  <!-- Custom cursor -->
+  <div id="cursor"></div>
+
+  <!-- Title -->
+  <div id="titleText">✦ The Lost Star &amp; Little Bear ✦</div>
+
+  <!-- Background star canvas -->
+  <canvas id="skyCanvas"></canvas>
+
+  <!-- Constellation canvas (shown after reunion) -->
+  <canvas id="constellationCanvas"></canvas>
+
+  <!-- Moon -->
+  <div id="moon"></div>
+
+  <!-- Zoom wrapper for camera effect -->
+  <div id="zoomWrapper">
+
+    <!-- ☁️ Bear cloud platform — bear sits on a fluffy drifting cloud -->
+    <div id="bearCloudWrap">
+
+      <!-- Bear container (sits above cloud) -->
+      <div id="bearContainer">
+        <!-- Speech bubble (above bear) -->
+        <div id="speechBubble"></div>
+
+        <!-- Bear SVG drawn inline -->
+        <svg id="bear" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+          <!-- Ears -->
+          <circle cx="28" cy="34" r="16" fill="#c8956c"/>
+          <circle cx="92" cy="34" r="16" fill="#c8956c"/>
+          <circle cx="28" cy="34" r="9" fill="#e8b896"/>
+          <circle cx="92" cy="34" r="9" fill="#e8b896"/>
+
+          <!-- Body -->
+          <ellipse cx="60" cy="108" rx="32" ry="30" fill="#c8956c"/>
+
+          <!-- Head group (for look-up animation) -->
+          <g id="bearHead">
+            <!-- Head -->
+            <circle cx="60" cy="60" r="36" fill="#c8956c"/>
+            <!-- Face shading -->
+            <ellipse cx="60" cy="68" rx="22" ry="18" fill="#e8b896"/>
+            <!-- Snout -->
+            <ellipse cx="60" cy="73" rx="13" ry="9" fill="#e8c8a8"/>
+            <!-- Nose -->
+            <ellipse cx="60" cy="68" rx="6" ry="4" fill="#8b5c3c"/>
+            <!-- Mouth -->
+            <path d="M54 74 Q60 80 66 74" stroke="#8b5c3c" stroke-width="1.8" fill="none" stroke-linecap="round" id="bearMouth"/>
+            <!-- Eyes -->
+            <g id="leftEyeGroup">
+              <ellipse cx="43" cy="54" rx="7" ry="7.5" fill="white"/>
+              <circle id="leftPupil" cx="43" cy="54" r="4.5" fill="#3d2010"/>
+              <circle cx="45" cy="52" r="1.5" fill="white"/>
+            </g>
+            <g id="rightEyeGroup">
+              <ellipse cx="77" cy="54" rx="7" ry="7.5" fill="white"/>
+              <circle id="rightPupil" cx="77" cy="54" r="4.5" fill="#3d2010"/>
+              <circle cx="79" cy="52" r="1.5" fill="white"/>
+            </g>
+            <!-- Eyelids for blinking -->
+            <ellipse id="leftLid" cx="43" cy="50" rx="7.5" ry="0" fill="#c8956c"/>
+            <ellipse id="rightLid" cx="77" cy="50" rx="7.5" ry="0" fill="#c8956c"/>
+            <!-- Blush marks -->
+            <ellipse id="blushLeft" class="blush" cx="32" cy="66" rx="10" ry="6"/>
+            <ellipse id="blushRight" class="blush" cx="88" cy="66" rx="10" ry="6"/>
+          </g>
+
+          <!-- Arms -->
+          <ellipse id="leftArm" cx="22" cy="100" rx="10" ry="16" fill="#c8956c" transform="rotate(-20, 22, 100)"/>
+          <ellipse id="rightArm" cx="98" cy="100" rx="10" ry="16" fill="#c8956c" transform="rotate(20, 98, 100)"/>
+
+          <!-- Swinging legs/feet group -->
+          <g id="bearFeetSwing">
+            <ellipse cx="46" cy="133" rx="13" ry="8" fill="#a0714f"/>
+            <ellipse cx="74" cy="133" rx="13" ry="8" fill="#a0714f"/>
+          </g>
+
+          <!-- Tummy spot -->
+          <ellipse cx="60" cy="108" rx="16" ry="14" fill="#e8b896" opacity="0.6"/>
+
+          <!-- Star held by bear (hidden initially) -->
+          <g id="bearHeldStar" opacity="0" transform="translate(60, 90)">
+            <polygon points="0,-18 4,-7 16,-7 7,1 11,12 0,5 -11,12 -7,1 -16,-7 -4,-7"
+              fill="#ffe066" stroke="#ffcc00" stroke-width="1"/>
+            <circle cx="0" cy="0" r="8" fill="rgba(255,230,100,0.3)"/>
+          </g>
+
+          <!-- Wave arm (hidden, shown at end) -->
+          <g id="waveArm" opacity="0">
+            <ellipse cx="98" cy="88" rx="10" ry="16" fill="#c8956c" transform="rotate(-30, 98, 88)"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Soft glow halo under cloud -->
+      <div id="cloudGlow"></div>
+
+      <!-- Fluffy cloud SVG the bear sits on -->
+      <svg id="bearCloud" viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <defs>
+          <radialGradient id="cloudGrad" cx="50%" cy="40%" r="55%">
+            <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.98"/>
+            <stop offset="60%"  stop-color="#e8e0ff" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#c8b8f0" stop-opacity="0.85"/>
+          </radialGradient>
+          <filter id="cloudBlur">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.5"/>
+          </filter>
+        </defs>
+        <!-- Soft blur shadow layer -->
+        <g filter="url(#cloudBlur)" opacity="0.3">
+          <ellipse cx="160" cy="90" rx="140" ry="30" fill="#b090e0"/>
+        </g>
+        <!-- Main cloud puffs -->
+        <ellipse cx="160" cy="72" rx="130" ry="38" fill="url(#cloudGrad)"/>
+        <ellipse cx="90"  cy="62" rx="72"  ry="48" fill="url(#cloudGrad)"/>
+        <ellipse cx="160" cy="55" rx="68"  ry="52" fill="url(#cloudGrad)"/>
+        <ellipse cx="230" cy="60" rx="76"  ry="46" fill="url(#cloudGrad)"/>
+        <ellipse cx="58"  cy="74" rx="50"  ry="32" fill="url(#cloudGrad)"/>
+        <ellipse cx="265" cy="72" rx="52"  ry="30" fill="url(#cloudGrad)"/>
+        <!-- Inner highlight for softness -->
+        <ellipse cx="148" cy="52" rx="55" ry="30" fill="rgba(255,255,255,0.55)"/>
+        <ellipse cx="88"  cy="58" rx="36" ry="24" fill="rgba(255,255,255,0.40)"/>
+        <ellipse cx="225" cy="57" rx="38" ry="22" fill="rgba(255,255,255,0.40)"/>
+      </svg>
+
+    </div><!-- /bearCloudWrap -->
+
+  </div><!-- /zoomWrapper -->
+
+  <!-- The Magic Star -->
+  <div id="magicStar">
+    <svg class="star-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+      <!-- Glow -->
+      <circle cx="30" cy="30" r="28" fill="rgba(255,230,80,0.15)"/>
+      <circle cx="30" cy="30" r="20" fill="rgba(255,230,80,0.2)"/>
+      <!-- Star shape -->
+      <polygon id="starPolygon"
+        points="30,5 35,22 52,22 39,33 44,50 30,40 16,50 21,33 8,22 25,22"
+        fill="#ffe066" stroke="#ffcc00" stroke-width="1.5"/>
+      <!-- Inner glow -->
+      <circle cx="30" cy="30" r="10" fill="rgba(255,255,180,0.6)"/>
+    </svg>
+  </div>
+
+  <!-- Dim overlay — fades in to hide all scene elements when message appears -->
+  <div id="sceneOverlay"></div>
+
+  <!-- Message card (rises from bottom) -->
+  <div id="messageCard">
+    <div id="messageCardTitle">A Little Message For You</div>
+    <div id="messageText"></div>
+    <div id="messageCardClose">⭐</div>
+  </div>
+
+</div><!-- /scene -->
+
+<script>
+/* ============================================================
+   STORY STATE MACHINE
+   ============================================================ */
+const STATE = {
+  INTRO: 'intro',
+  SEARCHING: 'searching',
+  STAR_APPEARS: 'star_appears',
+  STAR_NOTICED: 'star_noticed',
+  AWAITING_CLICK: 'awaiting_click',
+  STAR_FLYING: 'star_flying',
+  REUNION: 'reunion',
+  MAGICAL: 'magical',
+  MESSAGE: 'message',
+  ENDING: 'ending'
+};
+
+let currentState = STATE.INTRO;
+
+/* ============================================================
+   ELEMENT REFERENCES
+   ============================================================ */
+const scene         = document.getElementById('scene');
+const cursor        = document.getElementById('cursor');
+const skyCanvas     = document.getElementById('skyCanvas');
+const constCanvas   = document.getElementById('constellationCanvas');
+const moon          = document.getElementById('moon');
+const zoomWrapper   = document.getElementById('zoomWrapper');
+const bearEl        = document.getElementById('bear');
+const bearContainer = document.getElementById('bearContainer');
+const speechBubble  = document.getElementById('speechBubble');
+const magicStar     = document.getElementById('magicStar');
+const messageCard   = document.getElementById('messageCard');
+const messageText   = document.getElementById('messageText');
+const leftPupil     = document.getElementById('leftPupil');
+const rightPupil    = document.getElementById('rightPupil');
+const leftLid       = document.getElementById('leftLid');
+const rightLid      = document.getElementById('rightLid');
+const bearMouth     = document.getElementById('bearMouth');
+const bearHeldStar  = document.getElementById('bearHeldStar');
+const blushLeft     = document.getElementById('blushLeft');
+const blushRight    = document.getElementById('blushRight');
+const waveArm       = document.getElementById('waveArm');
+
+/* ============================================================
+   CANVAS SETUP — DPR-aware for crisp mobile rendering
+   ============================================================ */
+const skyCtx   = skyCanvas.getContext('2d');
+const constCtx = constCanvas.getContext('2d');
+
+// Physical pixel dimensions (accounts for devicePixelRatio)
+let canvasW = 0, canvasH = 0;
+
+function resizeCanvases() {
+  const dpr = window.devicePixelRatio || 1;
+  // Use clientWidth/clientHeight — reliable on mobile (avoids iOS URL bar issues)
+  const W = document.documentElement.clientWidth  || window.innerWidth;
+  const H = document.documentElement.clientHeight || window.innerHeight;
+
+  canvasW = W;
+  canvasH = H;
+
+  // Set the canvas physical pixel size
+  skyCanvas.width    = W * dpr;
+  skyCanvas.height   = H * dpr;
+  constCanvas.width  = W * dpr;
+  constCanvas.height = H * dpr;
+
+  // Scale the drawing context so coordinates stay in CSS pixels
+  skyCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  constCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // Force canvas display size via style (CSS 100% can mismatch on mobile)
+  skyCanvas.style.width    = W + 'px';
+  skyCanvas.style.height   = H + 'px';
+  constCanvas.style.width  = W + 'px';
+  constCanvas.style.height = H + 'px';
+}
+resizeCanvases();
+window.addEventListener('resize', () => {
+  resizeCanvases();
+  // Reinitialise star positions when screen rotates/resizes
+  stars.length = 0;
+  initStars();
+});
+
+/* ============================================================
+   CUSTOM CURSOR
+   ============================================================ */
+let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  cursor.style.left = mouseX + 'px';
+  cursor.style.top = mouseY + 'px';
+});
+
+/* ============================================================
+   BACKGROUND STARS
+   ============================================================ */
+const stars = [];
+const NUM_STARS = 180;
+
+function initStars() {
+  const W = canvasW || window.innerWidth;
+  const H = canvasH || window.innerHeight;
+  for (let i = 0; i < NUM_STARS; i++) {
+    stars.push({
+      x: Math.random() * W,
+      y: Math.random() * H * 0.78,
+      r: Math.random() * 2.2 + 0.6,   // min 0.6px — never sub-pixel on mobile
+      alpha: Math.random(),
+      speed: Math.random() * 0.008 + 0.003,
+      phase: Math.random() * Math.PI * 2,
+      color: Math.random() > 0.85 ? '#c8d8ff' : (Math.random() > 0.7 ? '#fffbe0' : 'white')
+    });
+  }
+}
+
+let magicalStarsActive = false;
+const magicalStarParticles = [];
+
+function addMagicalStars() {
+  const W = canvasW || window.innerWidth;
+  const H = canvasH || window.innerHeight;
+  for (let i = 0; i < 220; i++) {
+    magicalStarParticles.push({
+      x: Math.random() * W,
+      y: Math.random() * H * 0.78,
+      r: Math.random() * 2.4 + 0.6,
+      alpha: 0,
+      targetAlpha: Math.random() * 0.9 + 0.1,
+      speed: Math.random() * 0.006 + 0.002,
+      phase: Math.random() * Math.PI * 2,
+      delay: Math.random() * 3000,
+      born: Date.now()
+    });
+  }
+}
+
+function drawStars(t) {
+  const W = canvasW || window.innerWidth;
+  const H = canvasH || window.innerHeight;
+
+  skyCtx.clearRect(0, 0, W, H);
+
+  // Draw gradient sky background
+  const grad = skyCtx.createLinearGradient(0, 0, 0, H);
+  if (magicalStarsActive) {
+    grad.addColorStop(0, '#06011a');
+    grad.addColorStop(0.4, '#1a0540');
+    grad.addColorStop(0.7, '#350a6e');
+    grad.addColorStop(1, '#5a1080');
+  } else {
+    grad.addColorStop(0, '#0a0520');
+    grad.addColorStop(0.5, '#1a0a3a');
+    grad.addColorStop(1, '#2d1b5e');
+  }
+  skyCtx.fillStyle = grad;
+  skyCtx.fillRect(0, 0, W, H);
+
+  // Twinkling stars
+  const now = Date.now() / 1000;
+  for (const s of stars) {
+    const alpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(now * s.speed * 6 + s.phase));
+    skyCtx.beginPath();
+    skyCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    skyCtx.fillStyle = s.color;
+    skyCtx.globalAlpha = alpha;
+    skyCtx.fill();
+  }
+  skyCtx.globalAlpha = 1;
+
+  // Dreamy soft mist at the lower sky
+  const mistGrad = skyCtx.createLinearGradient(0, H * 0.62, 0, H);
+  mistGrad.addColorStop(0, 'rgba(60,30,110,0)');
+  mistGrad.addColorStop(0.5, `rgba(80,40,140,${magicalStarsActive ? 0.22 : 0.14})`);
+  mistGrad.addColorStop(1, `rgba(40,15,90,${magicalStarsActive ? 0.45 : 0.30})`);
+  skyCtx.fillStyle = mistGrad;
+  skyCtx.fillRect(0, H * 0.62, W, H * 0.38);
+  skyCtx.globalAlpha = 1;
+
+  // Magical extra stars
+  if (magicalStarsActive) {
+    const nowMs = Date.now();
+    for (const s of magicalStarParticles) {
+      const elapsed = nowMs - s.born - s.delay;
+      if (elapsed < 0) continue;
+      s.alpha = Math.min(s.targetAlpha, s.alpha + 0.005);
+      const tw = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(now * s.speed * 5 + s.phase));
+      skyCtx.beginPath();
+      skyCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      skyCtx.fillStyle = `hsl(${200 + Math.sin(s.phase) * 60}, 80%, 85%)`;
+      skyCtx.globalAlpha = s.alpha * tw;
+      skyCtx.fill();
+    }
+    skyCtx.globalAlpha = 1;
+
+    // Soft aurora bands
+    const aurora1 = skyCtx.createLinearGradient(0, H * 0.1, W, H * 0.4);
+    aurora1.addColorStop(0, 'rgba(100,60,255,0)');
+    aurora1.addColorStop(0.3, `rgba(100,60,255,${0.03 + 0.02 * Math.sin(now * 0.3)})`);
+    aurora1.addColorStop(0.6, `rgba(60,180,255,${0.04 + 0.02 * Math.sin(now * 0.4 + 1)})`);
+    aurora1.addColorStop(1, 'rgba(60,180,255,0)');
+    skyCtx.fillStyle = aurora1;
+    skyCtx.fillRect(0, 0, W, H * 0.6);
+  }
+}
+
+/* ============================================================
+   CONSTELLATIONS
+   ============================================================ */
+const CONSTELLATIONS = [
+  // Dipper shape
+  { points: [[0.1,0.1],[0.15,0.14],[0.2,0.13],[0.26,0.15],[0.3,0.12],[0.3,0.08],[0.26,0.06]] },
+  // Heart shape
+  { points: [[0.6,0.08],[0.65,0.05],[0.7,0.07],[0.72,0.12],[0.66,0.18],[0.6,0.22],[0.54,0.18],[0.48,0.12],[0.5,0.07],[0.55,0.05],[0.6,0.08]] },
+  // Bear shape
+  { points: [[0.78,0.2],[0.82,0.17],[0.87,0.19],[0.85,0.24],[0.88,0.28],[0.83,0.30],[0.79,0.27],[0.75,0.29]] }
+];
+
+let constDrawProgress = 0;
+let constDrawing = false;
+
+function startConstellations() {
+  constCanvas.classList.add('visible');
+  constDrawing = true;
+  constDrawProgress = 0;
+  animateConstellations();
+}
+
+function animateConstellations() {
+  if (!constDrawing) return;
+  constDrawProgress = Math.min(1, constDrawProgress + 0.004);
+  drawConstellations(constDrawProgress);
+  if (constDrawProgress < 1) requestAnimationFrame(animateConstellations);
+}
+
+function drawConstellations(progress) {
+  constCtx.clearRect(0, 0, constCanvas.width, constCanvas.height);
+  const W = constCanvas.width, H = constCanvas.height;
+
+  for (const c of CONSTELLATIONS) {
+    const pts = c.points;
+    const totalSegments = pts.length - 1;
+    const drawn = progress * totalSegments;
+
+    constCtx.beginPath();
+    constCtx.moveTo(pts[0][0] * W, pts[0][1] * H);
+
+    for (let i = 0; i < Math.floor(drawn); i++) {
+      constCtx.lineTo(pts[i+1][0] * W, pts[i+1][1] * H);
+    }
+
+    // Partial last segment
+    const partial = drawn % 1;
+    if (partial > 0 && Math.floor(drawn) < totalSegments) {
+      const a = pts[Math.floor(drawn)];
+      const b = pts[Math.floor(drawn) + 1];
+      constCtx.lineTo(
+        (a[0] + (b[0] - a[0]) * partial) * W,
+        (a[1] + (b[1] - a[1]) * partial) * H
+      );
+    }
+
+    constCtx.strokeStyle = `rgba(180,200,255,${0.5 * progress})`;
+    constCtx.lineWidth = 1;
+    constCtx.stroke();
+
+    // Dots at each point
+    for (let i = 0; i <= Math.min(Math.ceil(drawn), totalSegments); i++) {
+      const alpha = Math.min(1, (drawn - i + 1)) * 0.9 * progress;
+      if (alpha <= 0) continue;
+      constCtx.beginPath();
+      constCtx.arc(pts[i][0] * W, pts[i][1] * H, 2.5, 0, Math.PI * 2);
+      constCtx.fillStyle = `rgba(200,220,255,${alpha})`;
+      constCtx.fill();
+    }
+  }
+}
+
+/* ============================================================
+   CLOUDS
+   ============================================================ */
+function createClouds() {
+  const cloudDefs = [
+    { top: '8%', w: 160, h: 50, dur: 55, delay: 0 },
+    { top: '14%', w: 220, h: 65, dur: 80, delay: -20 },
+    { top: '6%', w: 130, h: 40, dur: 45, delay: -35 },
+    { top: '20%', w: 180, h: 55, dur: 65, delay: -50 },
+  ];
+  cloudDefs.forEach(d => {
+    const cloud = document.createElement('div');
+    cloud.className = 'cloud';
+    cloud.style.cssText = `top:${d.top}; animation-duration:${d.dur}s; animation-delay:${d.delay}s;`;
+    const body = document.createElement('div');
+    body.className = 'cloud-body';
+    body.style.cssText = `width:${d.w}px; height:${d.h}px;`;
+    // Puffs
+    for (let i = 0; i < 4; i++) {
+      const puff = document.createElement('div');
+      puff.style.cssText = `
+        position:absolute;
+        width:${d.h * (0.7 + Math.random() * 0.6)}px;
+        height:${d.h * (0.7 + Math.random() * 0.6)}px;
+        background:rgba(200,180,255,0.6);
+        border-radius:50%;
+        top:${-d.h * 0.3 - Math.random() * 15}px;
+        left:${i * (d.w / 4)}px;
+      `;
+      body.appendChild(puff);
+    }
+    cloud.appendChild(body);
+    scene.appendChild(cloud);
+  });
+}
+
+/* ============================================================
+   CLOUD STARS — small glowing stars that twinkle around the bear's cloud
+   ============================================================ */
+function createCloudStars() {
+  const wrap = document.getElementById('bearCloudWrap');
+  // Star positions relative to the cloud wrap (in %)
+  const positions = [
+    { top: '-28%', left: '-18%', size: 14, dur: 1.4, delay: 0 },
+    { top: '-40%', left: '15%',  size: 10, dur: 2.1, delay: 0.4 },
+    { top: '-35%', left: '55%',  size: 12, dur: 1.7, delay: 0.8 },
+    { top: '-22%', left: '90%',  size: 9,  dur: 2.4, delay: 0.2 },
+    { top: '-50%', left: '35%',  size: 8,  dur: 1.9, delay: 1.1 },
+    { top: '-15%', left: '-8%',  size: 7,  dur: 2.6, delay: 0.6 },
+    { top: '-18%', left: '105%', size: 11, dur: 1.6, delay: 1.5 },
+    { top: '-55%', left: '70%',  size: 6,  dur: 3.0, delay: 0.9 },
+  ];
+  positions.forEach(p => {
+    const star = document.createElement('div');
+    star.className = 'cloudStar';
+    star.style.cssText = `
+      top:${p.top}; left:${p.left};
+      width:${p.size}px; height:${p.size}px;
+      animation-duration:${p.dur}s;
+      animation-delay:${p.delay}s;
+      filter: drop-shadow(0 0 ${p.size/2}px rgba(255,230,100,0.9));
+    `;
+    // Mini star SVG
+    star.innerHTML = `<svg viewBox="0 0 20 20" width="${p.size}" height="${p.size}" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="10,1 12,7 19,7 13,11 15,18 10,14 5,18 7,11 1,7 8,7"
+        fill="#ffe066" stroke="#ffcc00" stroke-width="0.8"/>
+    </svg>`;
+    wrap.appendChild(star);
+  });
+}
+
+/* ============================================================
+   FIREFLIES
+   ============================================================ */
+const fireflies = [];
+function createFireflies(count) {
+  const target = count;
+  while (fireflies.length < target) {
+    const ff = document.createElement('div');
+    ff.className = 'firefly';
+    const size = 3 + Math.random() * 5;
+    const startX = Math.random() * window.innerWidth;
+    const startY = window.innerHeight * 0.1 + Math.random() * window.innerHeight * 0.75;
+    ff.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${startX}px; top:${startY}px;
+      animation: fireflyGlow ${1 + Math.random() * 2}s ease-in-out ${Math.random() * 3}s infinite alternate;
+    `;
+    zoomWrapper.appendChild(ff);
+    fireflies.push({ el: ff, x: startX, y: startY,
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: (Math.random() - 0.5) * 0.6,
+      angle: Math.random() * Math.PI * 2 });
+  }
+}
+
+function updateFireflies() {
+  const W = window.innerWidth, H = window.innerHeight;
+  fireflies.forEach(ff => {
+    ff.angle += (Math.random() - 0.5) * 0.08;
+    ff.x += Math.cos(ff.angle) * 0.6;
+    ff.y += Math.sin(ff.angle) * 0.4;
+    if (ff.x < 0) ff.x = W;
+    if (ff.x > W) ff.x = 0;
+    if (ff.y < H * 0.08) ff.y = H * 0.08;
+    if (ff.y > H * 0.88) ff.y = H * 0.88;
+    ff.el.style.left = ff.x + 'px';
+    ff.el.style.top = ff.y + 'px';
+  });
+}
+
+/* ============================================================
+   MAGICAL BACKGROUND LIGHTS
+   ============================================================ */
+function createMagicLights() {
+  const colors = ['#a855f7','#60a5fa','#f9a8d4','#34d399','#fbbf24'];
+  for (let i = 0; i < 8; i++) {
+    const light = document.createElement('div');
+    light.className = 'magicLight';
+    const size = 80 + Math.random() * 200;
+    light.style.cssText = `
+      width:${size}px; height:${size}px;
+      background: radial-gradient(circle, ${colors[i % colors.length]} 0%, transparent 70%);
+      left:${Math.random() * 100}vw;
+      top:${Math.random() * 70}vh;
+      --dx: ${(Math.random()-0.5)*80}px;
+      --dy: ${(Math.random()-0.5)*60}px;
+      animation-duration: ${6 + Math.random()*8}s;
+      animation-delay: ${Math.random()*5}s;
+    `;
+    scene.appendChild(light);
+  }
+}
+
+/* ============================================================
+   BEAR EYE TRACKING
+   ============================================================ */
+let eyeTrackingActive = true;
+const EYE_RANGE = 2.5;
+
+function updateEyes() {
+  if (!eyeTrackingActive) return;
+  const bearRect = bearContainer.getBoundingClientRect();
+  const bearCx = bearRect.left + bearRect.width / 2;
+  const bearCy = bearRect.top + bearRect.height * 0.42;
+  const dx = mouseX - bearCx;
+  const dy = mouseY - bearCy;
+  const angle = Math.atan2(dy, dx);
+  const dist = Math.min(Math.hypot(dx, dy), 300);
+  const factor = (dist / 300) * EYE_RANGE;
+  const ox = Math.cos(angle) * factor;
+  const oy = Math.sin(angle) * factor;
+  leftPupil.setAttribute('cx', 43 + ox);
+  leftPupil.setAttribute('cy', 54 + oy);
+  rightPupil.setAttribute('cx', 77 + ox);
+  rightPupil.setAttribute('cy', 54 + oy);
+}
+
+/* ============================================================
+   BEAR BLINKING
+   ============================================================ */
+let blinkInterval;
+function startBlinking() {
+  function blink() {
+    const dur = 120;
+    let frame = 0;
+    const total = 8;
+    const anim = setInterval(() => {
+      frame++;
+      const progress = frame <= total / 2 ? frame / (total / 2) : (total - frame) / (total / 2);
+      const ry = progress * 7.5;
+      leftLid.setAttribute('ry', ry);
+      rightLid.setAttribute('ry', ry);
+      if (frame >= total) {
+        clearInterval(anim);
+        leftLid.setAttribute('ry', 0);
+        rightLid.setAttribute('ry', 0);
+      }
+    }, dur / total);
+  }
+  blinkInterval = setInterval(blink, 2500 + Math.random() * 2000);
+  blink();
+}
+
+/* ============================================================
+   SPEECH BUBBLE / TYPEWRITER
+   ============================================================ */
+let typewriterTimeout = null;
+let speechQueue = [];
+let isTyping = false;
+
+function showSpeech(lines, callback) {
+  // lines: array of strings, or single string
+  if (!Array.isArray(lines)) lines = [lines];
+  speechQueue = [];
+  lines.forEach(l => speechQueue.push(l));
+  typeNextLine(callback);
+}
+
+function typeNextLine(callback) {
+  if (speechQueue.length === 0) {
+    setTimeout(() => {
+      hideSpeech();
+      if (callback) callback();
+    }, 1400);
+    return;
+  }
+  const line = speechQueue.shift();
+  typeLine(line, () => {
+    setTimeout(() => typeNextLine(callback), 900);
+  });
+}
+
+function typeLine(text, callback) {
+  speechBubble.textContent = '';
+  speechBubble.classList.add('visible');
+  let i = 0;
+  isTyping = true;
+  function next() {
+    if (i < text.length) {
+      speechBubble.textContent += text[i++];
+      typewriterTimeout = setTimeout(next, 40 + Math.random() * 30);
+    } else {
+      isTyping = false;
+      if (callback) callback();
+    }
+  }
+  next();
+}
+
+function hideSpeech() {
+  speechBubble.classList.remove('visible');
+}
+
+/* ============================================================
+   PARTICLES — SPARKLES
+   ============================================================ */
+function spawnSparkles(x, y, count, colors) {
+  colors = colors || ['#ffe066','#fff4a8','#ffcc00','#ffffff','#f9a8d4'];
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    const size = 3 + Math.random() * 8;
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 30 + Math.random() * 80;
+    const tx = Math.cos(angle) * dist;
+    const ty = Math.sin(angle) * dist;
+    const dur = 0.5 + Math.random() * 0.7;
+    s.style.cssText = `
+      left:${x}px; top:${y}px;
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      --tx:${tx}px; --ty:${ty}px;
+      animation-duration:${dur}s;
+      box-shadow:0 0 ${size}px ${colors[0]};
+    `;
+    scene.appendChild(s);
+    setTimeout(() => s.remove(), dur * 1000 + 100);
+  }
+}
+
+/* ============================================================
+   HEARTS
+   ============================================================ */
+function spawnHearts(x, y, count) {
+  const emojis = ['❤️','💖','💗','💝','💕','✨'];
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      const ox = (Math.random() - 0.5) * 80;
+      h.style.cssText = `
+        left:${x + ox}px;
+        top:${y}px;
+        animation-duration:${1.5 + Math.random() * 1}s;
+      `;
+      scene.appendChild(h);
+      setTimeout(() => h.remove(), 2600);
+    }, i * 150);
+  }
+}
+
+/* ============================================================
+   GLITTER TRAIL
+   ============================================================ */
+function spawnGlitter(x, y) {
+  const colors = ['#ffe066','#fff4a8','#c084fc','#60a5fa','#f9a8d4','#ffffff'];
+  for (let i = 0; i < 3; i++) {
+    const g = document.createElement('div');
+    g.className = 'glitter';
+    const size = 2 + Math.random() * 5;
+    const ox = (Math.random() - 0.5) * 20;
+    const dur = 0.6 + Math.random() * 0.6;
+    g.style.cssText = `
+      left:${x + ox}px; top:${y}px;
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      animation-duration:${dur}s;
+      box-shadow:0 0 4px ${colors[0]};
+    `;
+    scene.appendChild(g);
+    setTimeout(() => g.remove(), dur * 1000 + 100);
+  }
+}
+
+/* ============================================================
+   POSITION HELPERS
+   ============================================================ */
+function getBearCenter() {
+  const wrap = document.getElementById('bearCloudWrap');
+  const rect = wrap ? wrap.getBoundingClientRect() : bearContainer.getBoundingClientRect();
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height * 0.30
+  };
+}
+
+function getStarCenter() {
+  const rect = magicStar.getBoundingClientRect();
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2
+  };
+}
+
+/* ============================================================
+   POSITION SPEECH BUBBLE relative to bear on cloud
+   ============================================================ */
+function positionSpeechBubble() {
+  const wrap = document.getElementById('bearCloudWrap');
+  const bearRect = wrap ? wrap.getBoundingClientRect() : bearContainer.getBoundingClientRect();
+  const bubW = speechBubble.offsetWidth || 180;
+  const bubH = speechBubble.offsetHeight || 60;
+  const sceneRect = scene.getBoundingClientRect();
+
+  let left = bearRect.left + bearRect.width / 2 - bubW / 2 - sceneRect.left;
+  let top  = bearRect.top - bubH - 18 - sceneRect.top;
+
+  left = Math.max(8, Math.min(left, sceneRect.width - bubW - 8));
+  top  = Math.max(8, top);
+
+  speechBubble.style.left = left + 'px';
+  speechBubble.style.top  = top + 'px';
+}
+
+/* ============================================================
+   PLACE MAGIC STAR randomly in upper sky
+   ============================================================ */
+function placeMagicStar() {
+  const W = window.innerWidth, H = window.innerHeight;
+  // Keep star in upper third of sky, away from the bear's cloud
+  const x = W * 0.12 + Math.random() * W * 0.55;
+  const y = H * 0.05 + Math.random() * H * 0.18;
+  magicStar.style.left = x + 'px';
+  magicStar.style.top = y + 'px';
+}
+
+/* ============================================================
+   MAIN ANIMATION LOOP
+   ============================================================ */
+function mainLoop(t) {
+  drawStars(t);
+  updateFireflies();
+  updateEyes();
+  positionSpeechBubble();
+  requestAnimationFrame(mainLoop);
+}
+
+/* ============================================================
+   STORY SEQUENCE
+   ============================================================ */
+function startStory() {
+  currentState = STATE.INTRO;
+
+  // Phase 1: Bear sits, intro dialogue
+  setTimeout(() => {
+    showSpeech(['Oh no...', 'I lost my favorite star...', 'Can you help me find it?'], () => {
+      // Phase 2: Star appears
+      setTimeout(appearStar, 600);
+    });
+  }, 2200);
+}
+
+function appearStar() {
+  currentState = STATE.STAR_APPEARS;
+  placeMagicStar();
+  magicStar.classList.add('visible');
+
+  // Sparkles at star position
+  setTimeout(() => {
+    const pos = getStarCenter();
+    spawnSparkles(pos.x, pos.y, 12);
+  }, 800);
+
+  // Bear notices
+  setTimeout(() => {
+    currentState = STATE.STAR_NOTICED;
+    showSpeech(['Wait...', 'Is that my star? ⭐'], () => {
+      currentState = STATE.AWAITING_CLICK;
+      // Subtle hint pulse on star
+      magicStar.style.animation = 'starFloat 3s ease-in-out infinite, starWiggle 1.2s ease-in-out 0.5s 2';
+    });
+  }, 1800);
+}
+
+/* ============================================================
+   STAR CLICK HANDLER
+   ============================================================ */
+magicStar.addEventListener('click', () => {
+  if (currentState !== STATE.AWAITING_CLICK) return;
+  currentState = STATE.STAR_FLYING;
+
+  // Step 1: Star brightens & wiggles
+  magicStar.classList.add('clicked');
+  magicStar.style.animation = 'none';
+  scene.classList.add('brightened');
+  moon.classList.add('bright');
+
+  const starPos = getStarCenter();
+  spawnSparkles(starPos.x, starPos.y, 30, ['#ffe066','#ffffff','#c084fc','#f9a8d4']);
+
+  // Step 2: Zoom camera toward bear
+  setTimeout(() => {
+    zoomWrapper.style.transform = 'scale(1.18)';
+  }, 400);
+
+  // Step 3: Fly star to bear
+  setTimeout(() => {
+    flyStarToBear();
+  }, 900);
+});
+
+/* ============================================================
+   FLY STAR TO BEAR
+   ============================================================ */
+function flyStarToBear() {
+  const starPos = getStarCenter();
+  const bearPos = getBearCenter();
+
+  const startX = starPos.x;
+  const startY = starPos.y;
+  const endX = bearPos.x;
+  const endY = bearPos.y;
+
+  const duration = 2200;
+  const startTime = Date.now();
+  let lastGlitterTime = 0;
+
+  // Remove float animation
+  magicStar.style.animation = 'none';
+  magicStar.style.transition = 'none';
+
+  function animateStar() {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    // Ease in-out cubic
+    const ease = progress < 0.5
+      ? 4 * progress * progress * progress
+      : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+    // Arc path (slight curve upward at midpoint)
+    const arc = Math.sin(progress * Math.PI) * -60;
+    const cx = startX + (endX - startX) * ease;
+    const cy = startY + (endY - startY) * ease + arc;
+
+    magicStar.style.left = (cx - magicStar.offsetWidth / 2) + 'px';
+    magicStar.style.top = (cy - magicStar.offsetHeight / 2) + 'px';
+
+    // Glitter trail
+    const now = Date.now();
+    if (now - lastGlitterTime > 60) {
+      spawnGlitter(cx, cy);
+      lastGlitterTime = now;
+    }
+
+    if (progress < 1) {
+      requestAnimationFrame(animateStar);
+    } else {
+      // Star reached bear!
+      onStarReachesBear();
+    }
+  }
+  requestAnimationFrame(animateStar);
+}
+
+/* ============================================================
+   REUNION SEQUENCE
+   ============================================================ */
+function onStarReachesBear() {
+  currentState = STATE.REUNION;
+
+  // Hide the floating star
+  magicStar.style.opacity = '0';
+  magicStar.style.pointerEvents = 'none';
+
+  // Bear holds star
+  setTimeout(() => { bearHeldStar.style.opacity = '1'; }, 100);
+
+  // Bear stands up
+  bearEl.className = '';
+  void bearEl.offsetWidth;
+  bearEl.classList.add('standUp');
+
+  // Blush
+  setTimeout(() => {
+    blushLeft.classList.add('visible');
+    blushRight.classList.add('visible');
+  }, 200);
+
+  // Bear jumps
+  setTimeout(() => {
+    bearEl.className = '';
+    void bearEl.offsetWidth;
+    bearEl.classList.add('jumping');
+  }, 700);
+
+  // Big sparkle burst at bear
+  setTimeout(() => {
+    const pos = getBearCenter();
+    spawnSparkles(pos.x, pos.y, 40, ['#ffe066','#fff4a8','#f9a8d4','#c084fc','#ffffff']);
+    spawnHearts(pos.x, pos.y - 40, 8);
+  }, 1000);
+
+  // Hug
+  setTimeout(() => {
+    bearEl.className = '';
+    void bearEl.offsetWidth;
+    bearEl.classList.add('hugging');
+    const pos = getBearCenter();
+    spawnSparkles(pos.x, pos.y, 20);
+  }, 1600);
+
+  // Spin
+  setTimeout(() => {
+    bearEl.className = '';
+    void bearEl.offsetWidth;
+    bearEl.classList.add('spinning');
+  }, 2200);
+
+  // Dialogue: "You found it!"
+  setTimeout(() => {
+    showSpeech(['You found it! 🌟', 'Thank you so much! 💕'], () => {
+      // Begin magical transformation
+      setTimeout(startMagicalTransformation, 500);
+    });
+  }, 2600);
+
+  // More hearts during reunion
+  const heartInterval = setInterval(() => {
+    const pos = getBearCenter();
+    spawnHearts(pos.x + (Math.random()-0.5)*60, pos.y - 20, 2);
+    spawnSparkles(pos.x + (Math.random()-0.5)*80, pos.y + (Math.random()-0.5)*60, 4);
+  }, 500);
+  setTimeout(() => clearInterval(heartInterval), 5000);
+}
+
+/* ============================================================
+   MAGICAL TRANSFORMATION
+   ============================================================ */
+function startMagicalTransformation() {
+  currentState = STATE.MAGICAL;
+
+  // Many new stars appear
+  magicalStarsActive = true;
+  addMagicalStars();
+
+  // Constellations draw
+  startConstellations();
+
+  // Moon brightens more
+  moon.style.width = 'clamp(70px, 10vw, 140px)';
+  moon.style.height = 'clamp(70px, 10vw, 140px)';
+
+  // More fireflies
+  createFireflies(30);
+
+  // Magic lights
+  createMagicLights();
+
+  // Gentle zoom out
+  setTimeout(() => {
+    zoomWrapper.style.transform = 'scale(1.06)';
+  }, 400);
+
+  // Sparkle rain across screen
+  let rainCount = 0;
+  const rainInterval = setInterval(() => {
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight * 0.8;
+    spawnSparkles(x, y, 3, ['#ffe066','#c084fc','#60a5fa','#f9a8d4','#ffffff']);
+    rainCount++;
+    if (rainCount > 40) clearInterval(rainInterval);
+  }, 80);
+
+  // After magic settles, show message card
+  setTimeout(() => {
+    showMessageCard();
+  }, 3500);
+}
+
+/* ============================================================
+   MESSAGE CARD
+   ============================================================ */
+function showMessageCard() {
+  currentState = STATE.MESSAGE;
+
+  const overlay = document.getElementById('sceneOverlay');
+
+  // 1. Stop the eye-tracking so it doesn't fight fade-out
+  eyeTrackingActive = false;
+
+  // 2. Hide speech bubble immediately
+  hideSpeech();
+
+  // 3. Fade in the dark overlay — this covers the entire scene
+  overlay.classList.add('active');
+
+  // 4. After a beat, smoothly hide the individual scene layers too
+  setTimeout(() => {
+    // Hide bear + cloud
+    const cloudWrap = document.getElementById('bearCloudWrap');
+    if (cloudWrap) {
+      cloudWrap.style.transition = 'opacity 1.2s ease';
+      cloudWrap.style.opacity = '0';
+      cloudWrap.style.pointerEvents = 'none';
+    }
+    // Hide constellation canvas
+    constCanvas.style.transition = 'opacity 1s ease';
+    constCanvas.style.opacity = '0';
+    // Hide moon
+    moon.style.transition = 'opacity 1.2s ease';
+    moon.style.opacity = '0';
+    // Hide fireflies
+    fireflies.forEach(ff => {
+      ff.el.style.transition = 'opacity 0.8s ease';
+      ff.el.style.opacity = '0';
+    });
+    // Hide cloud stars
+    document.querySelectorAll('.cloudStar').forEach(s => {
+      s.style.transition = 'opacity 0.6s ease';
+      s.style.opacity = '0';
+    });
+    // Hide magic lights
+    document.querySelectorAll('.magicLight').forEach(l => {
+      l.style.transition = 'opacity 0.8s ease';
+      l.style.opacity = '0';
+    });
+    // Stop the sky canvas drawing stars (blank it out under the overlay)
+    magicalStarsActive = false;
+  }, 300);
+
+  // 5. After scene fades, reveal the message card in the center
+  setTimeout(() => {
+    messageCard.classList.add('revealed');
+  }, 900);
+
+  // 6. Begin typewriting message after card settles
+  setTimeout(() => {
+    typewriterCard(secretMessage.trim(), () => {
+      currentState = STATE.ENDING;
+      startEnding();
+    });
+  }, 2000);
+}
+
+function typewriterCard(text, callback) {
+  messageText.textContent = '';
+  let i = 0;
+  function next() {
+    if (i < text.length) {
+      messageText.textContent += text[i++];
+      setTimeout(next, 30 + Math.random() * 15);
+    } else {
+      if (callback) setTimeout(callback, 1200);
+    }
+  }
+  next();
+}
+
+/* ============================================================
+   ENDING — card fades, scene returns, bear waves goodbye
+   ============================================================ */
+function startEnding() {
+  // After a moment, gently hide the message card and restore the scene
+  setTimeout(() => {
+    revealSceneAfterMessage();
+  }, 2800);
+}
+
+function revealSceneAfterMessage() {
+  const overlay = document.getElementById('sceneOverlay');
+
+  // Slide card back down
+  messageCard.style.transition = 'bottom 1.2s ease, opacity 1.2s ease';
+  messageCard.style.bottom = '-400px';
+  messageCard.style.opacity = '0';
+
+  // Restore scene elements as overlay fades
+  setTimeout(() => {
+    // Fade overlay away
+    overlay.style.transition = 'opacity 1.8s ease';
+    overlay.classList.remove('active');
+
+    // Fade bear + cloud back in
+    const cloudWrap = document.getElementById('bearCloudWrap');
+    if (cloudWrap) {
+      cloudWrap.style.transition = 'opacity 1.6s ease';
+      cloudWrap.style.opacity = '1';
+    }
+    // Restore moon
+    moon.style.transition = 'opacity 1.4s ease';
+    moon.style.opacity = '1';
+    // Restore fireflies
+    fireflies.forEach(ff => {
+      ff.el.style.transition = 'opacity 1.2s ease';
+      ff.el.style.opacity = '';
+    });
+    // Restore cloud stars
+    document.querySelectorAll('.cloudStar').forEach(s => {
+      s.style.transition = 'opacity 1s ease';
+      s.style.opacity = '';
+    });
+    // Re-enable eye tracking
+    eyeTrackingActive = true;
+    // Bring back magical star sky
+    magicalStarsActive = true;
+  }, 600);
+
+  // Bear waves once scene is back
+  setTimeout(() => {
+    bearEl.className = '';
+    void bearEl.offsetWidth;
+    bearEl.classList.add('waving');
+    waveArm.style.opacity = '1';
+    bearMouth.setAttribute('d', 'M51 73 Q60 83 69 73');
+
+    // Final speech bubble
+    setTimeout(() => {
+      showSpeech(['I hope your wishes come true ⭐'], null);
+    }, 700);
+
+    // Gentle continuous hearts
+    const finalHeartsInterval = setInterval(() => {
+      const pos = getBearCenter();
+      spawnHearts(pos.x + (Math.random() - 0.5) * 100, pos.y - 10, 1);
+    }, 900);
+
+    // Soft sparkle drift
+    const finalSparklesInterval = setInterval(() => {
+      const x = Math.random() * window.innerWidth;
+      const y = Math.random() * window.innerHeight * 0.75;
+      spawnSparkles(x, y, 2, ['#ffe066','#c084fc','#60a5fa','#f9a8d4','#ffffff']);
+    }, 500);
+
+    window._storyIntervals = [finalHeartsInterval, finalSparklesInterval];
+  }, 2200);
+}
+
+/* ============================================================
+   CLOSE MESSAGE CARD
+   ============================================================ */
+document.getElementById('messageCardClose').addEventListener('click', () => {
+  if (currentState === STATE.MESSAGE) {
+    currentState = STATE.ENDING;
+    startEnding();
+  } else {
+    // Already in ending — just hide card
+    messageCard.style.transition = 'bottom 1s ease, opacity 1s ease';
+    messageCard.style.bottom = '-400px';
+    messageCard.style.opacity = '0';
+  }
+});
+
+/* ============================================================
+   INITIALIZE EVERYTHING
+   ============================================================ */
+function init() {
+  initStars();
+  createClouds();
+  createCloudStars();
+  createFireflies(12);
+  startBlinking();
+  requestAnimationFrame(mainLoop);
+  // Small delay before story begins
+  setTimeout(startStory, 1000);
+}
+
+init();
+</script>
+</body>
+</html>
